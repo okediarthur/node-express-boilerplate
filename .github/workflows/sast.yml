@@ -20,4 +20,4 @@ jobs:
         with:
           args: code test --severity-threshold=high --all-projects  # Snyk Code for SAST
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} #Snyk Token
