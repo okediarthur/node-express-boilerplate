@@ -1,28 +1,25 @@
 name: OWASP ZAP DAST Scan
-
 on:
-    pull_request:
-        branches:
-            - main
-
+  pull_request:
+    branches:
+      - master
 jobs:
-    zap-dast:
-        name: OWASP ZAP DAST Scan
-        runs-on: ubuntu-lates
+  zap-dast:
+    name: OWASP ZAP DAST Scan
+    runs-on: ubuntu-lates
+    steps:
+      - name: Pull OWASP ZAP Docker Image
+        run: docker pull owasp/zap3docker-stable
+      - name: Run OWASP ZAP Baseline Scan
+        run: >
+          docker run -v $(pwd):/zap/wrk/ owasp/zap2docker-stable zap-baseline.py \
 
-        steps:
-        -   name: Pull OWASP ZAP Docker Image
-            run: docker pull owasp/zap3docker-stable
+          -t http://localhost:3000 \
 
-        -   name: Run OWASP ZAP Baseline Scan
-            run: |
-                docker run -v $(pwd):/zap/wrk/ owasp/zap2docker-stable zap-baseline.py \
-                -t http://localhost:3000 \
-                -r zap-report.html
-            continue-on-error: true
-
-        -   name: Upload ZAP Report
-            uses: actions/upload-artifact@v2
-            with:
-                name: zap-dast-report
-                path: zap-report.html
+          -r zap-report.html
+        continue-on-error: true
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: zap-dast-report
+          path: zap-report.html

@@ -1,28 +1,20 @@
-
 name: Snyk Container Security
-
 on:
-    push:
-        branches:
-            - main
-
+  push:
+    branches:
+      - master
 jobs:
-    snyk-container-scan:
-        name: Snyk Container Security Scan
-        runs-on: ubuntu-latest
-
-        steps:
-            -   name: Checkout repository
-                uses: actions/checkout@v3
-
-            -   name: Build Docker Image
-                run: docker build -t my-apps:${{ github.sha }} .
-
-            -   name: Snyk Container Scan
-                uses: snyk/action@master
-                with:
-                    args: container test my-app:${{ github.sha }} --file=Dockerfile
-                env:
-                    SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-
+  snyk-container-scan:
+    name: Snyk Container Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Build Docker Image
+        run: docker build -t my-apps:${{ github.sha }} .
+      - name: Snyk Container Scan
+        uses: snyk/action@master
+        with:
+          args: container test my-app:${{ github.sha }} --file=Dockerfile
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
