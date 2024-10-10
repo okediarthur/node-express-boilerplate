@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Snyk SAST Scan
-        uses: snyk/actions/node@v1
+        uses: snyk/actions/node@0.6.0 # Use 'node' for Node.js projects
         with:
           args: code test --severity-threshold=high --all-projects  # Snyk Code for SAST
         env:
