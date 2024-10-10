@@ -1,21 +1,23 @@
 name: Snyk SAST Scan
+
 on:
   push:
     branches:
-      - master
+      - master  
   pull_request:
     branches:
-      - main
+      - master
+
 jobs:
   snyk-sast-scan:
-    name: Snyk SAST Scan
-    runs-on: ubuntu-lates
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Snyk SAST Code Scan
-        uses: snyk/actions@master
+
+      - name: Snyk SAST Scan
+        uses: snyk/actions/node@v1
         with:
-          args: code test --severity-threshold-high
+          args: code test --severity-threshold=high --all-projects  # Snyk Code for SAST
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

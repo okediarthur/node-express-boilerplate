@@ -1,21 +1,23 @@
-name: Snyk SCA Scan
+name: Snyk SCA Dependency Scan
+
 on:
   push:
     branches:
-      - master
+      - master  
   pull_request:
     branches:
-      - main
+      - master  
+
 jobs:
   snyk-sca-scan:
-    name: Snyk SCA Sca
-    runs-on: ubuntu-lates
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3  # Latest stable version
+
       - name: Snyk SCA Dependency Scan
-        uses: snyk/action@master
+        uses: snyk/actions/node@v1  # Use 'node' for Node.js projects
         with:
           args: test --severity-threshold=high --all-projects
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}  # Store token in Secrets
