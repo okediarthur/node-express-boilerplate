@@ -1,0 +1,26 @@
+
+name: Snyk SAST Scan
+
+on:
+    push:
+        branches:
+            - main #Triggers a push to the main branch
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    snyk-sast-scan:
+        name: Snyk SAST Scan
+        runs-on: ubuntu-lates
+
+        steps:
+            -   name: Checkout repository
+                uses: actions/checkout@v3
+
+            -   name: Snyk SAST Code Scan
+                uses: snyk/actions@master
+                with:
+                    args: code test --severity-threshold-high
+                env:
+                    SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

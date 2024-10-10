@@ -1,0 +1,27 @@
+
+name: Snyk SCA Scan
+
+on:
+    push:
+        branches:
+            - main
+
+    pull_request:
+        branches:
+                - main
+
+jobs:
+    snyk-sca-scan:
+        name: Snyk SCA Sca
+        runs-on: ubuntu-lates
+
+        steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+
+        - name: Snyk SCA Dependency Scan
+          uses: snyk/action@master
+          with:
+            args: test --severity-threshold=high --all-projects
+          env:
+            SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}      
