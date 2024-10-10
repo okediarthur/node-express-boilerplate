@@ -20,7 +20,7 @@ jobs:
         run: docker build -t my-app:${{ github.sha }} .
 
       - name: Snyk Container Scan
-        uses: snyk/actions/docker@0.4.0  # Use the appropriate action for Docker scanning
+        uses: snyk/actions/docker@master  # Use the appropriate action for Docker scanning
         with:
           args: container test my-app:${{ github.sha }} --file=Dockerfile --severity-threshold=high  # Scan container for vulnerabilities
         env:
