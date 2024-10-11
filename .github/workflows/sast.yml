@@ -1,4 +1,4 @@
-name: Snyk SAST
+name: Snyk Security
 
 on:
   push:
@@ -8,23 +8,47 @@ on:
 
 permissions:
   contents: read
-  security-events: write
 
 jobs:
-  snyk-sast:
+  snyk:
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
     runs-on: ubuntu-latest
+
     steps:
+      # Checkout repository
       - uses: actions/checkout@v4
 
-      - name: Set up Snyk CLI
+      # Set up Snyk CLI
+      - name: Set up Snyk CLI to check for security issues
         uses: snyk/actions/setup@v0.6.0
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
+      # SAST (Snyk Code) - Static Application Security Testing
       - name: Snyk Code test (SAST)
-        run: snyk code test --sarif > snyk-code.sarif || true
+        run: snyk code test --sarif > snyk-code.sarif || true  # || true prevents pipeline failure, upload results anyway
 
+      # Upload SARIF for Snyk Code results (GitHub Security Tab)
       - name: Upload Snyk Code results to GitHub Security Scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: snyk-code.sarif
+
+      # Open Source (SCA) - Software Composition Analysis
+      - name: Snyk Open Source monitor (SCA)
+        run: snyk monitor --all-projects || true
+
+      # Infrastructure as Code (IaC) - Check for misconfigurations
+      - name: Snyk IaC test and report
+        run: snyk iac test --report || true  # This runs IaC security scan for any configuration files
+
+      # Docker Image Build (Required for container security scanning)
+      - name: Build a Docker image
+        run: docker build -t your/image-to-test .
+
+      # Snyk Container Security
+      - name: Snyk Container monitor
+        run: snyk container monitor your/image-to-test --file=Dockerfile || true
