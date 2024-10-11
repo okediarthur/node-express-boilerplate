@@ -26,9 +26,9 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Run Snyk Code analysis for SAST
+      # Run Snyk Code analysis for SAST and save SARIF
       - name: Snyk Code test (SAST)
-        run: snyk code test --sarif > snyk-code.sarif || echo "Snyk Code test failed but continuing"
+        run: snyk code test --sarif > snyk-code.sarif || true
 
       # Check if the SARIF file was generated correctly (debugging step)
       - name: Inspect SARIF file
