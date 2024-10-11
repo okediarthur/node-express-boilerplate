@@ -1,29 +1,32 @@
 name: OWASP ZAP DAST Scan
 
 on:
-  workflow_dispatch:  # Can be manually triggered
+  push:
+    branches: ["master"]
   pull_request:
-    branches:
-      - master 
+    branches: ["master"]
 
 jobs:
   zap-dast:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # Checkout the repository code
+      - uses: actions/checkout@v4
 
+      # Pull the OWASP ZAP Docker Image
       - name: Pull OWASP ZAP Docker Image
         run: docker pull owasp/zap2docker-stable
 
+      # Run OWASP ZAP Baseline Scan
       - name: Run OWASP ZAP Baseline Scan
         run: |
           docker run -v $(pwd):/zap/wrk/ owasp/zap2docker-stable zap-baseline.py \
-            -t http://localhost:3000 \  # Replace with your app URL
-            -r zap-report.html
-        continue-on-error: true  # DAST failures don't necessarily fail the build
+          -t http://localhost:3000 \
+          -r zap-report.html
+        continue-on-error: true
 
+      # Upload the ZAP report as an artifact
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v2
         with:

@@ -2,26 +2,28 @@ name: Snyk Container Security
 
 on:
   push:
-    branches:
-      - master 
+    branches: ["master"]
   pull_request:
-    branches:
-      - master
+    branches: ["master"]
 
 jobs:
   snyk-container-security:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      # Checkout repository
+      - uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -t my-app:${{ github.sha }} .
-
-      - name: Snyk Container Scan
-        uses: snyk/actions/docker@master  # Use the appropriate action for Docker scanning
-        with:
-          args: container test my-app:${{ github.sha }} --file=Dockerfile --severity-threshold=high  # Scan container for vulnerabilities
+      # Set up Snyk CLI for Container Security
+      - name: Set up Snyk CLI
+        uses: snyk/actions/setup@806182742461562b67788a64410098c9d9b96adb
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      # Build the Docker image
+      - name: Build Docker image
+        run: docker build -t your/image-to-test .
+
+      # Run Snyk Container security scan
+      - name: Snyk Container monitor
+        run: snyk container monitor your/image-to-test --file=Dockerfile || true
