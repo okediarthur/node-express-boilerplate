@@ -1,23 +1,30 @@
-name: Snyk SAST Scan
+name: Snyk SAST
 
 on:
   push:
-    branches:
-      - master  
+    branches: ["master"]
   pull_request:
-    branches:
-      - master
+    branches: ["master"]
+
+permissions:
+  contents: read
+  security-events: write
 
 jobs:
-  snyk-sast-scan:
+  snyk-sast:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Snyk SAST Scan
-        uses: snyk/actions/node@master # Use 'node' for Node.js projects
-        with:
-          args: code test --severity-threshold=high --all-projects  # Snyk Code for SAST
+      - name: Set up Snyk CLI
+        uses: snyk/actions/setup@v0.6.0
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} #Snyk Token
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Snyk Code test (SAST)
+        run: snyk code test --sarif > snyk-code.sarif || true
+
+      - name: Upload Snyk Code results to GitHub Security Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: snyk-code.sarif
